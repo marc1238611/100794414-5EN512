@@ -17,3 +17,7 @@ void draw() {
   background(25);
   channel1.display();
 }
+
+void mousePressed() {
+  channel1.mousePressed();
+}

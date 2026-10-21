@@ -4,7 +4,10 @@ class Channel {
   float y;
   float w;
   float h;
-  
+   float buttonX;
+   float buttonY;
+   float buttonW;
+   float buttonH;
   float volume = 0.75;
   float pan = 0.0;
   
@@ -32,6 +35,8 @@ class Channel {
     textSize(11);
     text("VOLUME", x + w / 2, y + 45);
     
+    
+         
     float faderX = x+ w /2;
     float faderTop = y +65;
     float faderBottom = y + h - 75;
@@ -53,18 +58,46 @@ class Channel {
    fill(255);
    text(nf(pan,1,2), x + w / 2, y+h -36);
    
+
+   
    if (solo) {
-     fill (190, 50, 50);}
+     fill (255, 165, 0);}
      else{ fill(75, 80, 90);
      }
-     
-    noStroke();
-    rect(x+10, y+h-27, w-20, 20, 4);
+     noStroke();
+
+float buttonX = x + 10;
+float buttonY = y + h - 27;
+float buttonW = w - 20;
+float buttonH = 20;
+
+rect(buttonX, buttonY, buttonW, buttonH, 4);
+
+
+fill(255);
+textAlign(CENTER, CENTER);
+textSize(11);
+text("SOLO",
+     buttonX + buttonW / 2,
+     buttonY + buttonH / 2);
+   
+}
     
-    fill(255);
-    textSize(11);
-    
-    }
+void mousePressed() {
+
+  float buttonX = x + 10;
+  float buttonY = y + h - 27;
+  float buttonW = w - 20;
+  float buttonH = 20;
+
+  if (mouseX >= buttonX &&
+      mouseX <= buttonX + buttonW &&
+      mouseY >= buttonY &&
+      mouseY <= buttonY + buttonH) {
+
+    solo = !solo;
+  }
+}
 }
    
    
