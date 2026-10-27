@@ -1,0 +1,39 @@
+import oscP5.*;    //Import oscP5 written by Andres Schlegel https://sojamo.de/libraries/oscp5/
+import netP5.*;
+
+
+class OSCManager {      //OSCManager class
+  
+  OscP5 oscP5;          //initiates oscP5 class
+  
+NetAddress reaperAddress;
+
+  OSCManager(PApplet parent, String ip, int reaperPort) {      //constructor for osc communicaitons
+  
+  oscP5 = new OscP5(parent,9000);                      //Start osc and listen on port 9000
+  
+  reaperAddress = new NetAddress(ip, reaperPort); // set reapers ip and listening port
+  
+    
+  }
+    
+ 
+  // Send a float value to an OSC address
+  void sendFloat(String address, float value) {
+    OscMessage message = new OscMessage(address);
+    message.add(value);
+    oscP5.send(message, reaperAddress);
+  }
+
+  // Send an integer value to an OSC address
+  void sendInt(String address, int value) {
+    OscMessage message = new OscMessage(address);
+    message.add(value);
+    oscP5.send(message, reaperAddress);
+  }
+  
+  void setVolume(int track, float volume) {
+    volume = constrain(volume, 0, 1);
+    sendFloat("/track/" + track + "/volume", volume);
+  }
+}
