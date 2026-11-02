@@ -32,8 +32,19 @@ NetAddress reaperAddress;
     oscP5.send(message, reaperAddress);
   }
   
+  void setSolo(int track, boolean solo) {
+  sendInt("/track/" + track + "/solo", solo ? 1 : 0);                //sets the solo state OF A REAPER TRACK
+}
+  
   void setVolume(int track, float volume) {
     volume = constrain(volume, 0, 1);
-    sendFloat("/track/" + track + "/volume", volume);
+    sendFloat("/track/" + track + "/volume", volume);               //sets the fader level
   }
+  
+   void setPan(int trackNumber, float pan) {                        //set pan 
+    pan = constrain(pan, -1, 1);
+  
+   String address = "/track/" + trackNumber + "/pan";
+    sendFloat(address, pan);
+}
 }

@@ -10,8 +10,7 @@ class Channel {
 
 
   float volume = 0.75;
-  float pan = 0.0;
-
+  
   boolean draggingFader = false;
   boolean solo = false;
 
@@ -29,13 +28,13 @@ this.oscManager = oscManager;
     // Draw channel background
     fill(40, 44, 52);
     stroke(90);
-    rect(x, y, w, h);
+    rect(x, y, w, 720);
 
     // Channel title
     fill(255);
     textAlign(CENTER, CENTER);
     textSize(14);
-    text("Channel " + CHnumber, x + w / 2, y + 20);
+    text(CHnumber, x + w / 2, y + 700);
 
     // Volume label
     fill(200);
@@ -44,8 +43,8 @@ this.oscManager = oscManager;
 
     // Draw fader track
     float faderX = x + w / 2;
-    float faderTop = y + 65;
-    float faderBottom = y + h - 75;
+    float faderTop = y + 500;
+    float faderBottom = y + 690;
 
     stroke(150);
     line(faderX, faderTop, faderX, faderBottom);
@@ -59,16 +58,10 @@ this.oscManager = oscManager;
     rect(faderX, faderY, w * 0.55, 9, 3);
     rectMode(CORNER);
 
-    // Pan display
-    fill(200);
-    text("PAN", x + w / 2, y + h - 53);
-
-    fill(255);
-    text(nf(pan, 1, 2), x + w / 2, y + h - 36);
-
+   
     // Solo button
     float buttonX = x + 10;
-    float buttonY = y + h - 27;
+    float buttonY = y + 460;
     float buttonW = w - 20;
     float buttonH = 20;
 
@@ -90,7 +83,7 @@ this.oscManager = oscManager;
   void mousePressed() {
     // Check Solo button
     float buttonX = x + 10;
-    float buttonY = y + h - 27;
+    float buttonY = y + 460;
     float buttonW = w - 20;
     float buttonH = 20;
 
@@ -99,13 +92,15 @@ this.oscManager = oscManager;
         mouseY >= buttonY &&
         mouseY <= buttonY + buttonH) {
       solo = !solo;
+      oscManager.setSolo(CHnumber, solo);               // Send OSC to REAPER
+
       return;
     }
 
     // Check fader area
     float faderX = x + w / 2;
-    float faderTop = y + 65;
-    float faderBottom = y + h - 75;
+    float faderTop = y + 500;
+    float faderBottom = y + 690;
 
     if (mouseX >= faderX - w * 0.3 &&
         mouseX <= faderX + w * 0.3 &&
@@ -115,7 +110,7 @@ this.oscManager = oscManager;
       updateVolume();
     }
   }
-
+  
   void mouseDragged() {
     if (draggingFader) {
       updateVolume();
@@ -127,8 +122,8 @@ this.oscManager = oscManager;
   }
 
   void updateVolume() {
-    float faderTop = y + 65;
-    float faderBottom = y + h - 75;
+    float faderTop = y + 500;
+    float faderBottom = y + 690;
 
     volume = map(mouseY, faderTop, faderBottom, 1, 0);
     volume = constrain(volume, 0, 1);

@@ -4,6 +4,7 @@ import netP5.*;
 OSCManager oscManager;                        //OSC communication manager
 
 Channel[] channels = new Channel[4];
+PanKnob[] panKnobs = new PanKnob[4];
 
 void setup() {
   size(1080, 720);
@@ -13,12 +14,24 @@ void setup() {
 
   for (int i = 0; i < channels.length; i++) {
     float stripWidth = 75;                               
-    float spacing = 19;                                 
+    float spacing = 1;                                 
     float startX = 10 + i * (stripWidth + spacing);
+    
+    
+  for (int j = 0; j < panKnobs.length; j++) {
+    float x =  10 + j * (stripWidth + spacing) + stripWidth / 2;
+    float y = 400;
+
+  panKnobs[j] = new PanKnob(
+    x, y, 15, j + 1, oscManager
+  );
+}
 
     channels[i] = new Channel(
-      i + 1, startX, 20, stripWidth, 350, oscManager
+      i + 1, startX,00, stripWidth, 320, oscManager
     );
+   
+   
   }
 }
 
@@ -27,31 +40,38 @@ void draw() {
 
   for (Channel channel : channels) {
     channel.display();
+    
+  for (int j = 0; j < panKnobs.length; j++) {
+ panKnobs[j].display();
   }
-}
 
+}
+}
 void mousePressed() {                                  
   for (int i = 0; i < channels.length; i++) {
     channels[i].mousePressed();
   }
-   for (int i = 0; i < channels.length; i++) {
-    channels[i].mouseDragged();                        
+for (int j = 0; j < panKnobs.length; j++) {
+    panKnobs[j].mousePressed();
 }
-
-
-  for (int i = 0; i < channels.length; i++) {
-    channels[i].mouseDragged();
-  }
 }
 
 void mouseDragged() {
   for (int i = 0; i < channels.length; i++) {
     channels[i].mouseDragged();
   }
+     for (int j = 0; j < panKnobs.length; j++) {
+    panKnobs[j].mouseDragged();
+}
 }
 
 void mouseReleased() {
   for (int i = 0; i < channels.length; i++) {
     channels[i].mouseReleased();
   }
+      for (int j = 0; j < panKnobs.length; j++) {
+    panKnobs[j].mouseReleased();
+    
+    }
+
 }
