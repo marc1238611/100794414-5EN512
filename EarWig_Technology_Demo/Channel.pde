@@ -102,7 +102,7 @@ this.oscManager = oscManager;
     float faderTop = y + 500;
     float faderBottom = y + 690;
 
-    if (mouseX >= faderX - w * 0.3 &&
+    if (mouseX >= faderX - w * 0.3 && 
         mouseX <= faderX + w * 0.3 &&
         mouseY >= faderTop - 10 &&
         mouseY <= faderBottom + 10) {

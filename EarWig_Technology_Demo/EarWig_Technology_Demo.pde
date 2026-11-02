@@ -6,6 +6,8 @@ OSCManager oscManager;                        //OSC communication manager
 Channel[] channels = new Channel[4];
 PanKnob[] panKnobs = new PanKnob[4];
 
+Button[] transportButtons = new Button[5];
+
 void setup() {
   size(1080, 720);
     surface.setTitle("REAPER OSC Mixer");
@@ -31,8 +33,20 @@ void setup() {
       i + 1, startX,00, stripWidth, 320, oscManager
     );
    
-   
   }
+  
+   String[] labels = {
+    "REWIND", "PLAY", "PAUSE", "STOP", "RECORD"
+  };
+  String[] addresses = {
+    "/rewind", "/play", "/pause", "/stop", "/record"
+  };
+   for (int i = 0; i < transportButtons.length; i++) {
+    transportButtons[i] = new Button(920, 10+i*90, labels[i], addresses[i], oscManager);
+  }
+  
+
+
 }
 
 void draw() {
@@ -40,10 +54,13 @@ void draw() {
 
   for (Channel channel : channels) {
     channel.display();
-    
+  }
   for (int j = 0; j < panKnobs.length; j++) {
  panKnobs[j].display();
   }
+  
+  for (Button button : transportButtons) {
+    button.display();
 
 }
 }
