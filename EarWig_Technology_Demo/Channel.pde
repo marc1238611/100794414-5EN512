@@ -1,4 +1,3 @@
-
 class Channel {
   int CHnumber;
   float x;
@@ -36,10 +35,6 @@ this.oscManager = oscManager;
     textSize(14);
     text(CHnumber, x + w / 2, y + 700);
 
-    // Volume label
-    fill(200);
-    textSize(11);
-    text("VOLUME", x + w / 2, y + 45);
 
     // Draw fader track
     float faderX = x + w / 2;

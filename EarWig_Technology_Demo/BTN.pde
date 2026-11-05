@@ -5,8 +5,14 @@ class Button {
   float buttonW = 80;
   float buttonH = 40;
   
+  boolean active = false;
+  
   String label;
   String oscAddress;
+  
+  int normalColour = color(65);
+  int activeColour = color(0, 180, 100);
+  
  
  OSCManager oscManager;
  
@@ -20,7 +26,13 @@ class Button {
   }
   
   void display() {
-    fill(65);
+    
+    if (active) {
+    fill(activeColour);
+  } else {
+    fill(normalColour);
+  }
+
     stroke(220);
     rect(x, y, buttonW, buttonH, 8);
     
@@ -33,6 +45,22 @@ class Button {
   void mousePressed() {
     if (mouseX >= x && mouseX <= x + buttonW &&
     mouseY >= y && mouseY <= y + buttonH) {
+      if (label.equals("PLAY")) {
+  activeColour = color(0, 200, 0);
+}
+else if (label.equals("STOP")) {
+  activeColour = color(220, 0, 0);
+}
+else if (label.equals("PAUSE")) {
+  activeColour = color(230,180,0);
+}
+else if (label.equals("RECORD")) {
+  activeColour = color(200, 0, 0);
+}
+else if (label.equals("FORWARD")) {
+  activeColour = color(200, 0, 0);
+}
+      active = !active;
       
       oscManager.sendTrigger(oscAddress);
     }

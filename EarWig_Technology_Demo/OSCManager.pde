@@ -70,4 +70,10 @@ void record() {
   sendTrigger("/record");
 
 }
+void rewind() {
+  sendTrigger("action/40084");
+}
+void forward() {
+  sendTrigger("action/40085");
+}
 }
