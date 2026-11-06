@@ -44,9 +44,23 @@ NetAddress reaperAddress;
    void setPan(int trackNumber, float pan) {                        //set pan 
     pan = constrain(pan, -1, 1);
  
+ 
+
+ 
  String address = "/track/" + trackNumber + "/pan";
     sendFloat(address, pan);
  }
+ 
+  void setMute(int track, boolean mute) {
+  sendInt("/track/" + track + "/mute", mute ? 1 : 0);
+}
+
+
+void setMasterMute(boolean mute) {
+  setMute(0, mute);
+}
+
+
     void sendTrigger(String address) {
   OscMessage message = new OscMessage(address);
   oscP5.send(message, reaperAddress);

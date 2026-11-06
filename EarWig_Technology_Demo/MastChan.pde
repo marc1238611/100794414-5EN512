@@ -12,6 +12,7 @@ class MasterChannel {
   
   boolean draggingFader = false;
   boolean solo = false;
+boolean masterMute = false;
 
   MasterChannel(int MASTER, float x, float y, float w, float h,
         OSCManager oscManager) {
@@ -69,7 +70,8 @@ this.oscManager = oscManager;
     } else {
       fill(75, 80, 90);
     }
-
+    
+    
     noStroke();
     rect(buttonX, buttonY, buttonW, buttonH, 4);
 
@@ -77,15 +79,31 @@ this.oscManager = oscManager;
     textSize(11);
     text("SOLO", buttonX + buttonW / 2,
                  buttonY + buttonH / 2);
-  }
+  
+
+if (masterMute) {
+      fill(255, 0 ,0);
+    } else {
+      fill(75, 80, 90);
+    }
+
+float mastermutebtnY = y + 430;
+rect(buttonX,mastermutebtnY , buttonW, buttonH, 4);
+
+fill(255);
+    textSize(11);
+    text("MUTE", buttonX + buttonW / 2,
+      mastermutebtnY + buttonH / 2);
+}
 
 void mousePressed() {
-    // Check Solo button
     float buttonX = x + 10;
     float buttonY = y + 460;
     float buttonW = w - 20;
     float buttonH = 20;
+float mastermutebtnY = y + 430;
 
+    // Check Solo button
     if (mouseX >= buttonX &&
         mouseX <= buttonX + buttonW &&
         mouseY >= buttonY &&
@@ -95,7 +113,16 @@ void mousePressed() {
 
       return;
     }
+//Check Mute button
+    if (mouseX >= buttonX &&
+        mouseX <= buttonX + buttonW &&
+        mouseY >= mastermutebtnY &&
+        mouseY <= mastermutebtnY + buttonH) {
+      masterMute = !masterMute;
+      oscManager.setMasterMute(masterMute);               // Send OSC to REAPER
 
+      return;
+    }
     // Check fader area
     float faderX = x + w / 2;
     float faderTop = y + 500;

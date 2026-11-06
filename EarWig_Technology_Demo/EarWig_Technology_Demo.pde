@@ -25,7 +25,7 @@ void setup() {
     
   for (int j = 0; j < panKnobs.length; j++) {
     float x =  10 + j * (stripWidth + spacing) + stripWidth / 2;
-    float y = 400;
+    float y = 370;
 
   panKnobs[j] = new PanKnob(
     x, y, 15, j + 1, oscManager
