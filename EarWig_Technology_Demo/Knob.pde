@@ -8,8 +8,8 @@ class Knob {
   // Pan value
  float pan = 0.0;    // Pan value: -1 = left, 0 = centre, +1 = right
  String controlType = "PAN";
-float minValue = -1;
-float maxValue = 1;
+float minValue = -100;
+float maxValue = 100;
 String label = "PAN";
  
  
@@ -72,14 +72,14 @@ boolean dragging = false;
    noStroke();
    textAlign(CENTER);
    textSize(10);
-   
+  
 
     text(nf(pan, 1, 2), x, y + knobSize + 29);
     
     fill(255);
 textAlign(CENTER, CENTER);
 textSize(13);
-text(label, x, y + 27);
+text("PAN", x, y + 27);
   }
 
 //check whether mouse is clicked on pan knob
@@ -98,7 +98,7 @@ void mouseDragged() {
   
    
     
-    pan = constrain(pan, -100, 100);
+    pan = constrain(pan, minValue, maxValue);
     
 
   if (controlType.equals("PAN")) {

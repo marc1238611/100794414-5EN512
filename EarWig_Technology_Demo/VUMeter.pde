@@ -129,7 +129,7 @@ strokeWeight(1);
 rect(x, 250, 15, 100);       // Left meter outline
 rect(x + 25, 250, 15, 100); // Right meter outline
 
-    float masterX = 400;  // Horizontal position
+    
     
     float meterHeightL = constrain(vuL[i],0,1)*100;
     float meterHeightR = constrain(vuR[i],0,1)*100;
