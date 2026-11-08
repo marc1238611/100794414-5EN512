@@ -36,10 +36,7 @@ this.oscManager = oscManager;
     textSize(14);
     text(MASTER, x + w / 2, y + 700);
 
-    // Volume label
-    fill(200);
-    textSize(11);
-    text("VOLUME", x + w / 2, y + 45);
+  
 
     // Draw fader track
     float faderX = x + w / 2;
@@ -106,7 +103,7 @@ float mastermutebtnY = y + 430;
     // Check Solo button
     if (mouseX >= buttonX &&
         mouseX <= buttonX + buttonW &&
-        mouseY >= buttonY &&
+        mouseY >=  buttonY &&
         mouseY <= buttonY + buttonH) {
       solo = !solo;
       oscManager.setSolo(0, solo);               // Send OSC to REAPER

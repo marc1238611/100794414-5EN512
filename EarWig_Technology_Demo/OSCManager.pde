@@ -85,9 +85,9 @@ void record() {
 
 }
 void rewind() {
-  sendTrigger("action/40084");
+  sendTrigger("/rewind/1");
 }
 void forward() {
-  sendTrigger("action/40085");
+  sendTrigger("/action/40085");
 }
 }

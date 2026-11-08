@@ -8,8 +8,8 @@ class Knob {
   // Pan value
  float pan = 0.0;    // Pan value: -1 = left, 0 = centre, +1 = right
  String controlType = "PAN";
-float minValue = -100;
-float maxValue = 100;
+float minValue = -1;
+float maxValue = 1;
 String label = "PAN";
  
  
@@ -102,7 +102,8 @@ void mouseDragged() {
     
 
   if (controlType.equals("PAN")) {
-      oscManager.setPan(trackNumber, pan);
+    float reaperPan = (pan + 1.0) / 2.0;    
+      oscManager.setPan(trackNumber, reaperPan);
     }
 
 

@@ -1,4 +1,4 @@
-import oscP5.*;
+import oscP5.*;                               //imports the OSCP5 library by Andreas Schlegel
 import netP5.*;
 
 OSCManager oscManager;                        //OSC communication manager
@@ -8,7 +8,15 @@ Channel[] channels = new Channel[4];
 MasterChannel[] MasterChannels = new MasterChannel[1];
 PanKnob[] panKnobs = new PanKnob[4];
 Knob masterPanKnob;
+
+
+
 Button[] transportButtons = new Button[6];
+
+boolean rewinding = false;
+boolean fastForwarding = false;
+
+
 
 
 void setup() {
@@ -45,7 +53,7 @@ void setup() {
     "REWIND", "FORWARD", "PLAY", "PAUSE", "STOP", "RECORD",
   };
   String[] addresses = {
-    "/action/40085", "/action/40084", "/play", "/pause", "/stop", "/record"
+    "/action/40084", "/action/40085", "/play", "/pause", "/stop", "/record"
   };
   for (int i = 0; i < transportButtons.length; i++) {
     transportButtons[i] = new Button(980, 10+i*90, labels[i], addresses[i], oscManager);
@@ -85,8 +93,12 @@ void draw() {
   for (Button button : transportButtons) {
     button.display();
   }
+  for (Button button : transportButtons) {
+  button.repeatAction();
+}
   vuMeters.display();
   masterPanKnob.display();
+  
 }
 void mousePressed() {
 
@@ -126,9 +138,15 @@ void mouseReleased() {
     panKnobs[j].mouseReleased();
   }
   masterPanKnob.mouseReleased();
+
+ for (MasterChannel masterchannel : MasterChannels) {
+    masterchannel.mouseReleased();
+ }
+ 
+ for (Button button : transportButtons) {
+  button.mouseReleased();
 }
-
-
+}
 
 
 

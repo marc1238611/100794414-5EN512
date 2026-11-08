@@ -7,7 +7,8 @@ class PanKnob {
  
   // Pan value
  float pan = 0.0;    // Pan value: -1 = left, 0 = centre, +1 = right
- 
+ float minValue = -1;
+float maxValue = 1;
  
 boolean dragging = false;
 
@@ -32,7 +33,7 @@ boolean dragging = false;
   
  
   
-  float angle = map(pan, -1, 1, radians(135), radians(405));
+  float angle = map(pan, minValue, maxValue, radians(135), radians(405));
   
   //position indicator
   
@@ -68,10 +69,14 @@ void mousePressed(){
 //update pan value while dragging
 void mouseDragged() {
   if(dragging) {
-  pan = map(mouseX, x - knobSize, x + knobSize, -100, 100);
-  pan = constrain(pan, -100, 100);
-
-       oscManager.setPan(trackNumber, pan);
+  pan -= (mouseY - pmouseY) *
+  ((maxValue - minValue)/150.0);
+  
+   
+    
+    pan = constrain(pan, minValue, maxValue);          
+    float reaperPan = (pan + 1.0) / 2.0;              
+       oscManager.setPan(trackNumber, reaperPan);
   }
 }
 

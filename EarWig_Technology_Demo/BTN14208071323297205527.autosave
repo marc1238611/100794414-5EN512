@@ -1,0 +1,121 @@
+class Button {
+  
+  float x;
+  float y;
+  float buttonW = 80;
+  float buttonH = 40;
+  float w;
+  float h;
+  boolean active = false;
+  boolean isEQButton = false;  
+   int trackNumber = -1;
+  String label;
+  String oscAddress;
+  
+  int normalColour = color(65);
+  int activeColour = color(0, 180, 100);
+  
+  int buttonGroup = 0;
+Button[] groupButtons;
+  
+ OSCManager oscManager;
+ 
+  Button(float x, float y, String label, String oscAddress, OSCManager oscManager)
+  {
+      this.x = x;
+    this.y = y;
+    this.label = label;
+    this.oscAddress = oscAddress;
+    this.oscManager = oscManager;  
+  }
+  
+  
+  //EQ on/off Button
+  Button(float x, float y, String label,
+       int trackNumber, OSCManager oscManager) {
+         
+         this.x = x;
+         this.y = y;
+         this.label = label;
+         this.trackNumber = trackNumber;
+         this.oscManager = oscManager;
+    this.isEQButton = true;
+  this.oscAddress = "";
+       }
+       
+     
+  void display() {
+    
+ 
+  if (active) {
+    fill(activeColour);  
+  } else {
+    fill(normalColour); 
+
+}
+
+   noStroke();
+    rect(x, y, buttonW, buttonH, 4);
+    
+    fill(255);
+    textAlign(CENTER, CENTER);
+    textSize(13);
+    text(label, x + buttonW/2, y + buttonH/2);
+    
+  }
+       void mousePressed() {
+    
+    if (mouseX >= x && mouseX <= x + buttonW &&
+    mouseY >= y && mouseY <= y + buttonH) {
+      
+      if (isEQButton) {
+  if (label.equals("SEL")){
+        selectedEQTrack = trackNumber;
+        
+        if (groupButtons !=null) {
+          for (int i = 0; i < groupButtons.length; i++) {
+          groupButtons[i].active =
+          (groupButtons[i] == this);
+        }
+  }
+  println("Selected EQ track: " + selectedEQTrack);
+  
+ 
+} else if (label.equals("EQ")) {
+     active = !active;
+    oscManager.setEQEnabled(trackNumber, !active);
+            println("EQ button toggled for track: " + trackNumber);
+
+    }
+    
+    return;
+      }
+      
+else { if (label.equals("PLAY")) {
+  activeColour = color(0, 200, 0);
+}
+else if (label.equals("STOP")) {
+  activeColour = color(220, 0, 0);
+}
+else if (label.equals("PAUSE")) {
+  activeColour = color(230,180,0);
+}
+else if (label.equals("RECORD")) {
+  activeColour = color(200, 0, 0);
+}
+else if (label.equals("FORWARD")) {
+  activeColour = color(200, 0, 0);
+}
+ active = !active;
+      
+      oscManager.sendTrigger(oscAddress);
+    }
+
+}
+  }
+  
+  void setGroup(Button[] buttons) {
+  groupButtons = buttons;
+}
+  
+}
