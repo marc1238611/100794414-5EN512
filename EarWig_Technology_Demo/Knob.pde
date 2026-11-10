@@ -15,7 +15,6 @@ String label = "PAN";
  
  
 boolean dragging = false;
- 
  //OSC 
  int trackNumber;
  OSCManager oscManager;

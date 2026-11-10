@@ -7,6 +7,7 @@ class Button {
 
   boolean active = false;
   boolean isHeld = false;
+ boolean isPlaying = false;
 
   String label;
   String oscAddress;
@@ -49,6 +50,20 @@ int lastRepeatTime = 0;
       mouseY >= y && mouseY <= y + buttonH) {
 
 
+        // Play and pause toggle
+
+        if( label.equals("PLAY") || label.equals("PAUSE")) {
+           isPlaying = !isPlaying;
+  label = isPlaying ? "PAUSE" : "PLAY";
+    active = isPlaying;
+
+
+activeColour = isPlaying ? color(230, 180, 0) : color(0, 200, 0);
+    oscManager.sendTrigger(isPlaying ? "/play" : "/pause");
+  return;
+        }
+
+
       //Forward and Rewind Button
       if (label.equals("REWIND") || label.equals("FORWARD")) {
         isHeld = true;
@@ -60,13 +75,9 @@ int lastRepeatTime = 0;
       }
 
       //Other Transport Controls
-      if (label.equals("PLAY")) {
-        activeColour = color(0, 200, 0);
-      } else if (label.equals("STOP")) {
+      else if (label.equals("STOP")) {
         activeColour = color(220, 0, 0);
-      } else if (label.equals("PAUSE")) {
-        activeColour = color(230, 180, 0);
-      } else if (label.equals("RECORD")) {
+      }  else if (label.equals("RECORD")) {
         activeColour = color(200, 0, 0);
       } else if (label.equals("FORWARD")) {
         activeColour = color(200, 0, 0);
