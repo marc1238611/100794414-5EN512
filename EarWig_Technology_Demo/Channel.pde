@@ -156,5 +156,8 @@ fill(255);
     volume = map(mouseY, faderTop, faderBottom, 1, 0);
     volume = constrain(volume, 0, 1);
     oscManager.setVolume(CHnumber, volume);
+
+    
   }
+  
 }

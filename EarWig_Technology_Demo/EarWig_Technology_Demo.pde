@@ -34,7 +34,6 @@ void setup() {
     float spacing = 1;
     float startX = 10 + i * (stripWidth + spacing);
 
-
     for (int j = 0; j < panKnobs.length; j++) {
       float x =  10 + j * (stripWidth + spacing) + stripWidth / 2;
       float y = 370;
@@ -94,8 +93,8 @@ void draw() {
     button.display();
   }
   for (Button button : transportButtons) {
-  button.repeatAction();
-}
+    button.repeatAction();
+  }
   vuMeters.display();
   masterPanKnob.display();
   
@@ -153,4 +152,31 @@ void mouseReleased() {
 
 void oscEvent(OscMessage theOscMessage) {
   vuMeters.oscEvent(theOscMessage);
+
+  String address = theOscMessage.addrPattern();
+  String[] adarray = split(address,"/"); 
+    if (
+    (theOscMessage.checkTypetag("f") ||
+    theOscMessage.checkTypetag("i")) &&
+    adarray.length > 3 && adarray[1].equals("track")) {
+int trackNumber = int(adarray[2]);
+float value = theOscMessage.get(0).floatValue();
+if (trackNumber >= 0 && trackNumber <= channels.length) {
+ int index = trackNumber - 1;
+  String property = adarray[3];
+
+  if (property.equals("volume")) {
+    channels[index].volume = constrain(value, 0, 1);
+  } else if (property.equals("pan")) {
+    panKnobs[index].pan = constrain(value * 2 - 1, -1, 1);
+  } else if (property.equals("mute")) {
+    channels[index].mute = value != 0;
+  } else if (property.equals("solo")) {
+    channels[index].solo = value != 0;
+  
+
+}
+
+    }
+}
 }
