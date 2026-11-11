@@ -9,7 +9,7 @@ MasterChannel[] MasterChannels = new MasterChannel[1];
 PanKnob[] panKnobs = new PanKnob[4];
 Knob masterPanKnob;
 Button[] transportButtons = new Button[6];
-
+a
 
 Knob[] eqBand1 = new Knob[3];
 Knob[] eqBand2 = new Knob[3];

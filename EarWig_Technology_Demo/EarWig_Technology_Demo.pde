@@ -1,28 +1,32 @@
-// REAPER OSC mixer demo
-// Sends OSC control messages to reaper and listens for the feedback
-import oscP5.*;                               //imports the OSCP5 library by Andreas Schlegel
+import oscP5.*;
 import netP5.*;
 
-OSCManager oscManager;                        //OSC communication manager - handles the outgoing OSC commands and incoming feedback
-vuL vuMeters;                                 //displays the VU meter for reaper audio levels
+OSCManager oscManager;                        //OSC communication manager
+vuL vuMeters;
 
-Channel[] channels = new Channel[4];                      //Creates 4 channel strips in the mixer UI
-MasterChannel[] MasterChannels = new MasterChannel[1];    // Master output Channel strip
-Knob[] knobs = new Knob[4];                      //PanKnob and pan function control for each channel
-Knob masterPanKnob;                                        //PanKnob and pan function control for the Master channel
+Channel[] channels = new Channel[4];
+MasterChannel[] MasterChannels = new MasterChannel[1];
+Knob[] panKnobs = new Knob[4];
+Knob masterPanKnob;
+Button[] transportButtons = new Button[5];
 
 
+Knob[] eqBand1 = new Knob[3];
+Knob[] eqBand2 = new Knob[3];
+Knob[] eqBand3 = new Knob[3];
+Knob[] eqBand4 = new Knob[3];
+Button[] eqonButtons = new Button[4];
+Button[] eqSelectButtons = new Button[4];
 
-Button[] transportButtons = new Button[4];                //Creates the 4 transport buttons
-
-boolean rewinding = false;
-boolean fastForwarding = false;
+int selectedEQTrack = 1;
 
 
 
 
 void setup() {
   size(1080, 720);
+  pixelDensity(2);
+
   surface.setTitle("REAPER OSC Mixer");
 
   oscManager = new OSCManager(this, "127.0.0.1", 8000);        //creates OSC manager
@@ -36,16 +40,12 @@ void setup() {
     float spacing = 1;
     float startX = 10 + i * (stripWidth + spacing);
 
-<<<<<<< Updated upstream
-    for (int j = 0; j < panKnobs.length; j++) {
-=======
 
-    for (int j = 0; j < knobs.length; j++) {
->>>>>>> Stashed changes
+    for (int j = 0; j < panKnobs.length; j++) {
       float x =  10 + j * (stripWidth + spacing) + stripWidth / 2;
       float y = 370;
 
-      knobs[j] = new Knob(
+      panKnobs[j] = new Knob(
         x, y, 15, j + 1, oscManager
         );
     }
@@ -56,14 +56,16 @@ void setup() {
   }
 
   String[] labels = {
-    "REWIND", "FORWARD", "PLAY", "RECORD",
+    "REWIND", "FORWARD", "PLAY", "STOP", "RECORD",
   };
   String[] addresses = {
-    "/action/40084", "/action/40085", "/play", "/record"
+    "/action/40084", "/action/40085", "/play", "/stop", "/record"
   };
   for (int i = 0; i < transportButtons.length; i++) {
     transportButtons[i] = new Button(980, 10+i*90, labels[i], addresses[i], oscManager);
   };
+  transportButtons[2].isPlayPauseButton = true;
+transportButtons[2].pauseOscAddress = "/pause";
 
   //Master channel
 
@@ -81,7 +83,93 @@ void setup() {
   masterPanKnob = new Knob(
     937.5, 370, 15, 0, oscManager
     );
+
+
+
+
+  //EQ knob positioning
+  //EQ Knob Column x coord
+  int colEQ1 = 670;
+  int colEQ2 = 720;      
+  int colEQ3 = 770;
+  int colEQ4 = 820;
+int rowEQstart = 150; //EQ Knob rows height
+
+
+  //EQ knob settings
+
+  String[] eqLabels = {"GAIN", "FREQ", "OCT"};
+  float[] minValues = {-30, 20, 0.01};
+  float[] maxValues = {30, 20000, 4.00};
+  float[] starteqValues = {0, 1000, 1};
+
+  //EQ Band 1
+
+  for (int control = 0; control < 3; control++) {
+    eqBand1[control] = new Knob(
+      colEQ1, rowEQstart + control * 70, 15,
+      eqLabels[control], minValues[control],
+      maxValues[control], starteqValues[control],
+      selectedEQTrack, oscManager
+      );
+    eqBand1[control].eqBand = 1;
+  }
+  //EQ Band 2
+
+  for (int control = 0; control < 3; control++) {
+    eqBand2[control] = new Knob(
+      colEQ2, rowEQstart + control * 70, 15,
+      eqLabels[control], minValues[control],
+      maxValues[control], starteqValues[control],
+      selectedEQTrack, oscManager
+      );
+    eqBand2[control].eqBand = 2;
+  }
+
+  //EQ Band 3
+  for (int control = 0; control < 3; control++) {
+    eqBand3[control] = new Knob(
+      colEQ3, rowEQstart + control * 70, 15,
+      eqLabels[control], minValues[control],
+      maxValues[control], starteqValues[control],
+      selectedEQTrack, oscManager
+      );
+    eqBand3[control].eqBand = 3;
+  }
+
+  //EQ Band 4
+
+  for (int control = 0; control < 3; control++) {
+    eqBand4[control] = new Knob(
+      colEQ4, rowEQstart + control * 70, 15,
+      eqLabels[control], minValues[control],
+      maxValues[control], starteqValues[control],
+      selectedEQTrack, oscManager
+      );
+    eqBand4[control].eqBand = 4;
+  }
+  for (int i = 0;i<eqonButtons.length; i++) {
+    
+    //EQ on/off button
+    eqonButtons[i] = new Button(channels[i].x + 10, channels[i].y + 150, "EQ", i+1, oscManager);
+    eqonButtons[i].buttonW = 55;
+  eqonButtons[i].buttonH = 20;
+
+
+//EQ select button
+eqSelectButtons[i] = new  Button(channels[i].x + 10, channels[i].y + 100, "SEL", i+1, oscManager);
+    
+  eqSelectButtons[i].buttonW = 55;  // Width
+eqSelectButtons[i].buttonH = 20;  // Height
+
 }
+
+
+
+}
+
+
+
 
 void draw() {
   background(25);
@@ -92,27 +180,44 @@ void draw() {
   for (MasterChannel masterchannel : MasterChannels) {
     masterchannel.display();
   }
-  for (int j = 0; j < knobs.length; j++) {
-    knobs[j].display();
+  for (int j = 0; j < panKnobs.length; j++) {
+    panKnobs[j].display();
   }
-  
+
   for (Button button : transportButtons) {
     button.display();
   }
-  for (Button button : transportButtons) {
-    button.repeatAction();
-  }
+ transportButtons[0].repeatAction(); // REWIND
+transportButtons[1].repeatAction(); // FORWARD
   vuMeters.display();
   masterPanKnob.display();
-  
+
+  //EQ
+  fill(255);
+  textAlign(CENTER, CENTER);
+  textSize(15);
+  text("CHANNEL " + selectedEQTrack + " EQ", 740, 100);
+
+
+  for (Knob knob : eqBand1) knob.display();
+  for (Knob knob : eqBand2) knob.display();
+  for (Knob knob : eqBand3) knob.display();
+  for (Knob knob : eqBand4) knob.display();
+  for (Button button : eqonButtons) {
+  button.display();
 }
+for (Button button : eqSelectButtons) {
+  button.display();
+}
+}
+
 void mousePressed() {
 
   for (int i = 0; i < channels.length; i++) {
     channels[i].mousePressed();
   }
-  for (int j = 0; j < knobs.length; j++) {
-    knobs[j].mousePressed();
+  for (int j = 0; j < panKnobs.length; j++) {
+    panKnobs[j].mousePressed();
   }
   for (Button button : transportButtons) {
     button.mousePressed();
@@ -121,69 +226,128 @@ void mousePressed() {
     masterchannel.mousePressed();
   }
   masterPanKnob.mousePressed();
+  
+  //EQ stuff
+  
+  for (Knob knob : eqBand1) knob.mousePressed();
+for (Knob knob : eqBand2) knob.mousePressed();
+for (Knob knob : eqBand3) knob.mousePressed();
+for (Knob knob : eqBand4) knob.mousePressed();
+  for (Button button : eqonButtons) {
+  button.mousePressed();
+}
+for (Button button : eqSelectButtons) {
+  button.mousePressed();
+}
 }
 
 void mouseDragged() {
   for (int i = 0; i < channels.length; i++) {
     channels[i].mouseDragged();
   }
-  for (int j = 0; j < knobs.length; j++) {
-    knobs[j].mouseDragged();
+  for (int j = 0; j < panKnobs.length; j++) {
+    panKnobs[j].mouseDragged();
   }
   for (MasterChannel masterchannel : MasterChannels) {
     masterchannel.mouseDragged();
   }
   masterPanKnob.mouseDragged();
+  
+  for (Knob knob : eqBand1) knob.mouseDragged();
+for (Knob knob : eqBand2) knob.mouseDragged();
+for (Knob knob : eqBand3) knob.mouseDragged();
+for (Knob knob : eqBand4) knob.mouseDragged();
 }
 
 void mouseReleased() {
   for (int i = 0; i < channels.length; i++) {
     channels[i].mouseReleased();
   }
-  for (int j = 0; j < knobs.length; j++) {
-    knobs[j].mouseReleased();
+  for (int j = 0; j < panKnobs.length; j++) {
+    panKnobs[j].mouseReleased();
   }
   masterPanKnob.mouseReleased();
+  
+  for (Knob knob : eqBand1) knob.mouseReleased();
+for (Knob knob : eqBand2) knob.mouseReleased();
+for (Knob knob : eqBand3) knob.mouseReleased();
+for (Knob knob : eqBand4) knob.mouseReleased();
 
- for (MasterChannel masterchannel : MasterChannels) {
-    masterchannel.mouseReleased();
- }
- 
- for (Button button : transportButtons) {
-  button.mouseReleased();
+transportButtons[0].mouseReleased();
+transportButtons[1].mouseReleased();
 }
-}
+
+
 
 
 
 
 void oscEvent(OscMessage theOscMessage) {
+
   vuMeters.oscEvent(theOscMessage);
 
-  String address = theOscMessage.addrPattern();
-  String[] adarray = split(address,"/"); 
-    if (
-    (theOscMessage.checkTypetag("f") ||
-    theOscMessage.checkTypetag("i")) &&
-    adarray.length > 3 && adarray[1].equals("track")) {
-int trackNumber = int(adarray[2]);
-float value = theOscMessage.get(0).floatValue();
-if (trackNumber >= 0 && trackNumber <= channels.length) {
- int index = trackNumber - 1;
-  String property = adarray[3];
+String address = theOscMessage.addrPattern();
 
-  if (property.equals("volume")) {
-    channels[index].volume = constrain(value, 0, 1);
-  } else if (property.equals("pan")) {
-    panKnobs[index].pan = constrain(value * 2 - 1, -1, 1);
-  } else if (property.equals("mute")) {
-    channels[index].mute = value != 0;
-  } else if (property.equals("solo")) {
-    channels[index].solo = value != 0;
-  
+println("OSC IN: " + address);
 
+// for my channels
+ for (int i = 0; i < channels.length; i++) {
+    if (address.equals("/track/" + (i + 1) + "/volume") &&
+        theOscMessage.checkTypetag("f")) {
+      channels[i].volume =
+        constrain(theOscMessage.get(0).floatValue(), 0, 1);
+        }
+         if (address.equals("/track/" + (i + 1) + "/mute") &&
+        theOscMessage.checkTypetag("f")) {
+      channels[i].mute = theOscMessage.get(0).floatValue() != 0;
+    }
+
+    if (address.equals("/track/" + (i + 1) + "/solo") &&
+        theOscMessage.checkTypetag("f")) {
+      channels[i].solo = theOscMessage.get(0).floatValue() != 0;
+    }
+     if (address.equals("/track/" + (i + 1) + "/pan") &&
+        theOscMessage.checkTypetag("f")) {
+      panKnobs[i].pan = map(theOscMessage.get(0).floatValue(), 0, 1, -1, 1);
+    }
+
+
+      }
+
+      //Master Channel
+
+      if (address.equals("/master/volume") &&
+    theOscMessage.checkTypetag("f")) {
+  MasterChannels[0].volume =
+    constrain(theOscMessage.get(0).floatValue(), 0, 1);
+}
+
+if (address.equals("/track/mute/toggle") &&
+    theOscMessage.checkTypetag("f")) {
+  MasterChannels[0].masterMute =
+    theOscMessage.get(0).floatValue() != 0;
+}
+
+if (address.equals("/master/solo") &&
+    theOscMessage.checkTypetag("f")) {
+  MasterChannels[0].solo =
+    theOscMessage.get(0).floatValue() != 0;
+}
+
+if (address.equals("/master/pan") &&
+    theOscMessage.checkTypetag("f")) {
+  masterPanKnob.pan =
+    map(theOscMessage.get(0).floatValue(), 0, 1, -1, 1);
+}
+    
+      
+//EQ stuff
+for (int i = 0; i < channels.length; i++) {
+ if (address.equals("/track/" + (i + 1) + "/fxeq/bypass") &&
+    theOscMessage.checkTypetag("f")) {
+  eqonButtons[i].active = theOscMessage.get(0).floatValue() != 0;
 }
 
     }
-}
-}
+    
+  }

@@ -22,6 +22,7 @@ NetAddress reaperAddress;
   void sendFloat(String address, float value) {
     OscMessage message = new OscMessage(address);
     message.add(value);
+    println("OSC OUT: " + address + " = " + value);
     oscP5.send(message, reaperAddress);
   }
 
@@ -65,7 +66,17 @@ void setMasterMute(boolean mute) {
   OscMessage message = new OscMessage(address);
   oscP5.send(message, reaperAddress);
 }
+
+void setEQEnabled(int track, boolean enabled) {
+  sendInt("/track/" + track + "/fxeq/bypass", enabled ? 0 : 1);
+}
+   
+ void setFXParam(int track, int fx, int param, float value) {
+  value = constrain(value, 0, 1);
   
+  String address = "/track/" + track + "/fx/" + fx + "/fxparam/" + param + "/value";
+sendFloat(address, value);
+ }
    
 
 void play() {
@@ -85,9 +96,11 @@ void record() {
 
 }
 void rewind() {
-  sendTrigger("/rewind/1");
+  sendTrigger("action/40085");
 }
 void forward() {
-  sendTrigger("/action/40085");
+  sendTrigger("/action/40084");
 }
+
+
 }

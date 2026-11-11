@@ -17,6 +17,7 @@ String label = "PAN";
 boolean dragging = false;
  //OSC 
  int trackNumber;
+ int eqBand;
  OSCManager oscManager;
  
  Knob(float x, float y, float knobSize, int trackNumber, OSCManager oscManager) {
@@ -75,10 +76,10 @@ boolean dragging = false;
 
     text(nf(pan, 1, 2), x, y + knobSize + 29);
     
-    fill(255);
+   fill(255);
 textAlign(CENTER, CENTER);
 textSize(13);
-text("PAN", x, y + 27);
+text(label, x, y + 27);
   }
 
 //check whether mouse is clicked on pan knob
@@ -101,13 +102,38 @@ void mouseDragged() {
     
 
   if (controlType.equals("PAN")) {
-    float reaperPan = (pan + 1.0) / 2.0;    
-      oscManager.setPan(trackNumber, reaperPan);
+      float reaperPan = (pan + 1.0) / 2.0;
+oscManager.setPan(trackNumber, reaperPan);
     }
 
+else if (controlType.equals("EQ")) {
 
+println("EQ knob: " + label + " | band: " + eqBand +
+        " | selected track: " + selectedEQTrack);
+        
+  if (label.equals("GAIN")) {
+    oscManager.sendFloat(
+      "/track/" + selectedEQTrack +
+      "/fxeq/band/" + eqBand + "/gain/db",
+      pan
+    );
+
+  } else if (label.equals("FREQ")) {
+    oscManager.sendFloat(
+      "/track/" + selectedEQTrack +
+      "/fxeq/band/" + eqBand + "/freq/hz",
+      pan
+    );
+
+  } else if (label.equals("OCT")) {
+    oscManager.sendFloat(
+      "/track/" + selectedEQTrack +
+      "/fxeq/band/" + eqBand + "/q/oct",
+      pan
+    );
   }
-    
+}
+}
 }
 
 
