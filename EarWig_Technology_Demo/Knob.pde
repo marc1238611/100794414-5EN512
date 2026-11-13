@@ -1,3 +1,5 @@
+//A draggable circular control used for pan and track EQ controls.
+//Its label, value range and track/band determine what it controls. 
 class Knob {
   
   //Position and size
@@ -20,6 +22,7 @@ boolean dragging = false;
  int eqBand;
  OSCManager oscManager;
  
+ //Creates the pan knob for the given channel
  Knob(float x, float y, float knobSize, int trackNumber, OSCManager oscManager) {
    this.x = x;
    this.y = y;
@@ -28,6 +31,7 @@ boolean dragging = false;
    this.oscManager = oscManager;
  }
  
+ //Creates an EQ knob with its own label, vlaue range and starting value
  Knob(float x, float y, float knobSize, String label, float minValue, float maxValue, float startValue, int trackNumber, OSCManager oscManager) {
    this.x = x;
    this.y = y;
@@ -41,7 +45,8 @@ boolean dragging = false;
     this.controlType = "EQ";
 }
  
- 
+ //Draws the knob face and indicator, then shows it label and value
+ //The indicators angle is calculated from the knobs configured vlaue range
  void display(){
    
    //Pan Knob
@@ -82,7 +87,8 @@ textSize(13);
 text(label, x, y + 27);
   }
 
-//check whether mouse is clicked on pan knob
+//check whether mouse is clicked on knob
+//Begins dragging only when the clcik falls within the knobs circular area. 
 void mousePressed(){
   if (dist(mouseX, mouseY, x, y) <= knobSize *1) {
     dragging = true;
@@ -90,7 +96,9 @@ void mousePressed(){
   }
 }
 
-//update pan value while dragging
+//Updates the value while dragging according to the mouses vertical position and 
+//Clamps it to the knobs range
+//Sends the resulting pan or EQ value to Reaper
 void mouseDragged() {
   if(dragging) {
   pan -= (mouseY - pmouseY) *
@@ -100,7 +108,7 @@ void mouseDragged() {
     
     pan = constrain(pan, minValue, maxValue);
     
-
+//Pan is displayed as -1(Left) to 1 (Right), this converts it to Reapers normalized   e 
   if (controlType.equals("PAN")) {
       float reaperPan = (pan + 1.0) / 2.0;
 oscManager.setPan(trackNumber, reaperPan);

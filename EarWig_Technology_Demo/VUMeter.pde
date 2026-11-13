@@ -6,9 +6,9 @@ float vumasterX = 915;  // Horizontal position
 int maxHeight = 100;
 int numtracks = 4; 
 
-float[] vuL = new float[100]; //allow up to 100 tracks 
+float[] vuL = new float[4]; //allow up to 100 tracks 
 
-float[] vuR = new float[100]; //allow up to 100 tracks 
+float[] vuR = new float[4]; //allow up to 100 tracks 
 
 
 

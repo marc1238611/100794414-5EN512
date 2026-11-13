@@ -1,20 +1,25 @@
+//Represents one Reaper track in the fader, it draws the fader, mute and solo controls
+//and sends user changes to Reaper through OSC
+
 class Channel {
   int CHnumber;
   float x;
   float y;
   float w;
   float h;
+  float volume = 0.75;
 
   OSCManager oscManager;              // OSC manager
-
-
-  float volume = 0.75;
 
   boolean draggingFader = false;
   boolean solo = false;
   boolean mute = false;
 
+Button muteButton;
+Button soloButton;
 
+//Stores the channels track number, screen position and OSC connection
+//Creates its solo and mute buttons at a position relaitve to the channel strip.
   Channel(int CHnumber, float x, float y, float w, float h,
     OSCManager oscManager) {
     this.CHnumber = CHnumber;
@@ -23,8 +28,16 @@ class Channel {
     this.w = w;
     this.h = h;
     this.oscManager = oscManager;
+    
+    muteButton = new Button(x + 10, y + 430, w - 20, 20,
+                        "MUTE", "MUTE", CHnumber, oscManager);
+soloButton = new Button(x + 10, y + 460, w - 20, 20,
+                        "SOLO", "SOLO", CHnumber, oscManager);
   }
 
+  //Draws the channel strip and fader. 
+  //Stores the mapped 0-1 volume to the faders screen position
+  //then draws the mute and solo buttons
   void display() {
     // Draw channel background
     fill(40, 44, 52);
@@ -57,73 +70,19 @@ class Channel {
 
 
     // Solo button
-    float buttonX = x + 10;
-    float buttonY = y + 460;
-    float buttonW = w - 20;
-    float buttonH = 20;
-
-    if (solo) {
-      fill(255, 165, 0);
-    } else {
-      fill(75, 80, 90);
-    }
-
-    noStroke();
-    rect(buttonX, buttonY, buttonW, buttonH, 4);
-
-    fill(255);
-    textSize(11);
-    text("SOLO", buttonX + buttonW / 2,
-      buttonY + buttonH / 2);
+    muteButton.display();
+soloButton.display();
 
 
-
-    // MUTE BUTTON
-    float mutebtnY = y + 430;
-   if(mute) {
-     fill(255,0 ,0);
-   } else {
-       fill(75, 80, 90); };
-    rect(buttonX, mutebtnY, buttonW, buttonH, 4);
-fill(255);
-    textSize(11);
-    text("MUTE", buttonX + buttonW / 2,
-      mutebtnY + buttonH / 2);
   }
 
+  //Forwards the mouse click to the mute and solo buttons 
+  //and starts dragging the fader if the mouse was pressed
+  //within the fader boundary.
   void mousePressed() {
-   float buttonX = x + 10;
-    float buttonY = y + 460;
-    float buttonW = w - 20;
-    float buttonH = 20;
-    float mutebtnY = y + 430;
    
-   //check mute button 
-  
-    if (mouseX >= buttonX &&
-    mouseX <= buttonX + buttonW &&
-    mouseY >= mutebtnY &&
-    mouseY <= mutebtnY + buttonH) {
-
-  mute = !mute;
-  oscManager.setMute(CHnumber, mute);
-
-  return;
-}
-    
-    
-    
-    // Check Solo button
-
-    if (mouseX >= buttonX &&
-      mouseX <= buttonX + buttonW &&
-      mouseY >= buttonY &&
-      mouseY <= buttonY + buttonH) {
-      solo = !solo;
-      oscManager.setSolo(CHnumber, solo);               // Send OSC to REAPER
-
-      return;
-    }
+   muteButton.mousePressed();
+soloButton.mousePressed();
 
     // Check fader area
     float faderX = x + w / 2;
@@ -139,6 +98,7 @@ fill(255);
     }
   }
 
+
   void mouseDragged() {
     if (draggingFader) {
       updateVolume();
@@ -149,6 +109,7 @@ fill(255);
     draggingFader = false;
   }
 
+//Converts the mouse's vertical position into a volume value and clamp its to 0-1 and sends the updated value to Reaper via OSC
   void updateVolume() {
     float faderTop = y + 500;
     float faderBottom = y + 690;
