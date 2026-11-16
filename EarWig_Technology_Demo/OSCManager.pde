@@ -40,12 +40,12 @@ NetAddress reaperAddress;
   void setSolo(int track, boolean solo) {
   sendInt("/track/" + track + "/solo", solo ? 1 : 0);                //sets the solo state a Reaper track
 }
-  //constrains the volume to be within reapers valuer range of 0-1
+  //constrains the volume to be within reapers valuer range of 0 - 1
   void setVolume(int track, float volume) {
     volume = constrain(volume, 0, 1);
     sendFloat("/track/" + track + "/volume", volume);               //sets the fader level
   }
-  //constrains the pan value to within reapers 0-1 range and sends it to the channels pan address
+  //constrains the pan value to within reapers 0 - 1 range and sends it to the channels pan address
    void setPan(int trackNumber, float pan) {                        //set pan 
     pan = constrain(pan, 0, 1);
  
@@ -60,7 +60,7 @@ NetAddress reaperAddress;
   sendInt("/track/" + track + "/mute", mute ? 1 : 0);
 }
 
-//Reuses the channels mute command but with track 0 to contorl the master mute state
+//Reuses the channels mute command but with track 0 to control the master mute state
 void setMasterMute(boolean mute) {
   setMute(0, mute);
 }
@@ -71,9 +71,9 @@ void setMasterMute(boolean mute) {
   oscP5.send(message, reaperAddress);
 }
 //sends the inverse of the enable state as Reapers EQ bypass has 
-//0 means enabled and 1 means bypassed
+//1 means enabled and 0 means bypassed
 void setEQEnabled(int track, boolean enabled) {
-  sendInt("/track/" + track + "/fxeq/bypass", enabled ? 0 : 1);
+  sendInt("/track/" + track + "/fxeq/bypass", enabled ? 1 : 0);
 }
  
  void setFXParam(int track, int fx, int param, float value) {
@@ -101,10 +101,10 @@ void record() {
 
 }
 void rewind() {
-  sendTrigger("action/40085");
+  sendTrigger("/action/40084");
 }
 void forward() {
-  sendTrigger("/action/40084");
+  sendTrigger("/action/40085");
 }
 
 

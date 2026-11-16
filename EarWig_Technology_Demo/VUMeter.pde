@@ -1,3 +1,5 @@
+//Stores the incoming left and right VU levels for each channels and 
+//then draws a pair of meters for each one
 class vuL {
   
 float vumasterX = 915;  // Horizontal position
@@ -5,38 +7,36 @@ float vumasterX = 915;  // Horizontal position
 
 int maxHeight = 100;
 int numtracks = 4; 
+//array stores the most recent level for each channel. 
+//0 is reserved for the master channel and track numbers are stored at their track number.
+float[] vuL = new float[5]; 
 
-float[] vuL = new float[4]; //allow up to 100 tracks 
-
-float[] vuR = new float[4]; //allow up to 100 tracks 
+float[] vuR = new float[5];  
 
 
 
  
 
 String addr; 
-
+//Reads the OSC address to identify the track or master and left for right channel.
+//Then stores the received level for the next drawing frame
 void oscEvent(OscMessage theOscMessage)  
 
 { 
 
  
 
-    //store full OSC address 
 
     addr = theOscMessage.addrPattern(); 
 
     float oscfl=0.0; 
 
-    //we're after a float type number, if it is one, grab it 
-
-    if(theOscMessage.checkTypetag("f")) 
-
-      oscfl = theOscMessage.get(0).floatValue(); 
-
-    else //if it isn't, print the address in console 
-
-      println(addr); 
+if (theOscMessage.checkTypetag("f")) {
+  oscfl = theOscMessage.get(0).floatValue();
+} else {
+  println(addr);
+  return;
+}
 
        
 
@@ -44,9 +44,7 @@ void oscEvent(OscMessage theOscMessage)
 
     int trnum=0; 
 
-    //ALWAYS check length of array to check that there is  
 
-    //something to compare.  Exception caused otherwise. 
 
     if(adarray.length>1 && adarray[1].equals("track")) 
 
@@ -56,6 +54,9 @@ void oscEvent(OscMessage theOscMessage)
 
           trnum = int(adarray[2]); 
 
+    if (trnum < 1 || trnum > numtracks) {
+  return;
+}
         if(adarray.length>3 && adarray[3].equals("vu")) 
 
         { 
@@ -72,7 +73,7 @@ void oscEvent(OscMessage theOscMessage)
 
           { 
 
-            vuR[trnum] = theOscMessage.get(0).floatValue(); 
+            vuR[trnum] = oscfl;
 
           } 
 
@@ -80,7 +81,7 @@ void oscEvent(OscMessage theOscMessage)
 
     } 
 
-    //catch MASTER VU data 
+//Master VU meter
 
     if(adarray.length>1 && adarray[1].equals("master")) 
 
@@ -92,18 +93,19 @@ void oscEvent(OscMessage theOscMessage)
 
         if(adarray.length>3 && adarray[3].equals("L")) 
 
-          vuL[0] = theOscMessage.get(0).floatValue(); 
+          vuL[0] = oscfl; 
 
         else if(adarray.length>3 && adarray[3].equals("R")) 
 
-          vuR[0] = theOscMessage.get(0).floatValue(); 
+          vuR[0] = oscfl; 
 
       } 
 
     } 
 
 } 
-
+//Draws stereo track meters and the master VU meter, scales levels to the height, limits them to the display range and
+//Changes the color of the VU to red when clipping
 void display() 
 
 { 
@@ -138,23 +140,17 @@ noFill();
 stroke(180);
 strokeWeight(1);
 
-
-
- 
-  if (meterHeightR >= maxHeight) {
-  fill(255,0, 0);  // Red = clipping
-} else {
-  fill(0,255,0);
-  
-}
+//Left VU
 if (meterHeightL >= maxHeight) {
   fill(255,0,0);  // Red = clipping
 } else {
   fill(0,255,0);
 }
-  rect(x, 350 - meterHeightL,15, meterHeightL);
-  
-   if (meterHeightR >= maxHeight) {
+   rect(x, 350 - meterHeightL,15, meterHeightL);
+
+
+   //Right VU
+  if (meterHeightR >= maxHeight) {
   fill(255,0, 0);  // Red = clipping
 } else {
   fill(0,255,0);
@@ -167,7 +163,7 @@ rect(x +25, 350 - meterHeightR, 15, meterHeightR) ;
     float masterHeightR = constrain(vuR[0], 0, 1) * 100;
 
   //mastervuL
-  if (masterHeightL >= 95) {
+  if (masterHeightL >= maxHeight) {
   fill(255, 0, 0);
 } else {
   fill(0, 255, 0);
@@ -176,7 +172,7 @@ rect(vumasterX, 350 - masterHeightL, 15, masterHeightL);
 
 
 //mastervuR
-if (masterHeightR >= 95) {
+if (masterHeightR >= maxHeight) {
   fill(255, 0, 0);
 } else {
   fill(0, 255, 0);

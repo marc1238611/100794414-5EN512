@@ -107,6 +107,8 @@ soloButton.mousePressed();
     float faderTop = y + 500;
     float faderBottom = y + 690;
 
+    
+
     volume = map(mouseY, faderTop, faderBottom, 1, 0);
     volume = constrain(volume, 0, 1);
      oscManager.setVolume(0, volume);

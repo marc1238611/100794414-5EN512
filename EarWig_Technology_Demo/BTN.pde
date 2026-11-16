@@ -137,7 +137,7 @@ for (Knob knob : eqBand4) knob.trackNumber = trackNumber;
  //Toggle EQ bypass for this track and update the buttons active state
 } else if (label.equals("EQ")) {
      active = !active;
-    oscManager.setEQEnabled(trackNumber, !active);
+    oscManager.setEQEnabled(trackNumber, active);
             println("EQ button toggled for track: " + trackNumber);
 
     }

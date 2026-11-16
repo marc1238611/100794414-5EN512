@@ -57,7 +57,13 @@ boolean dragging = false;
   
  
   
-  float angle = map(pan, minValue, maxValue, radians(135), radians(405));
+float angle;
+if (controlType.equals("EQ") && label.equals("FREQ")) {
+  angle = map(log(pan), log(minValue), log(maxValue),
+              radians(135), radians(405));
+} else {
+  angle = map(pan, minValue, maxValue, radians(135), radians(405));
+}
   
   //position indicator
   
@@ -101,14 +107,17 @@ void mousePressed(){
 //Sends the resulting pan or EQ value to Reaper
 void mouseDragged() {
   if(dragging) {
-  pan -= (mouseY - pmouseY) *
-  ((maxValue - minValue)/150.0);
+  if (controlType.equals("EQ") && label.equals("FREQ")) {
+  pan *= pow(2, -(mouseY - pmouseY) / 75.0);
+} else {
+  pan -= (mouseY - pmouseY) * ((maxValue - minValue) / 150.0);
+}
   
    
     
     pan = constrain(pan, minValue, maxValue);
     
-//Pan is displayed as -1(Left) to 1 (Right), this converts it to Reapers normalized   e 
+//Pan is displayed as -1(Left) to 1 (Right), this converts it to Reapers normalized  
   if (controlType.equals("PAN")) {
       float reaperPan = (pan + 1.0) / 2.0;
 oscManager.setPan(trackNumber, reaperPan);

@@ -49,20 +49,19 @@ void setup() {
 
   //Creates the mixer channel strips 
   //Each channel represents one track in reaper and has volume, solo, pan and mute controls in the visual mixer.
+  float stripWidth = 75;
+  float spacing = 1;
+  for (int j = 0; j < panKnobs.length; j++) {
+    float x = 10 + j * (stripWidth + spacing) + stripWidth / 2;
+    float y = 370;
+
+    panKnobs[j] = new Knob(
+      x, y, 15, j + 1, oscManager
+      );
+  }
+
   for (int i = 0; i < channels.length; i++) {
-    float stripWidth = 75;
-    float spacing = 1;
     float startX = 10 + i * (stripWidth + spacing);
-
-
-    for (int j = 0; j < panKnobs.length; j++) {
-      float x =  10 + j * (stripWidth + spacing) + stripWidth / 2;
-      float y = 370;
-
-      panKnobs[j] = new Knob(
-        x, y, 15, j + 1, oscManager
-        );
-    }
 
     channels[i] = new Channel(
       i + 1, startX, 00, stripWidth, 320, oscManager
@@ -70,13 +69,13 @@ void setup() {
   }
 //TRANSPORT CONTROLS
 //the transport controls map directly to Reaper actions.
-//these button ID's are specific to Reapers Default OSC mappings and allow the Ui to trigger 
+//these button ID's are specific to Reapers Default OSC mappings and allow the UI to trigger 
 //rewind, forward, play, pause and record functions.
   String[] labels = {
-    "REWIND", "FORWARD", "PLAY", "STOP", "RECORD",
+    "FORWARD", "REWIND", "PLAY", "STOP", "RECORD",
   };
   String[] addresses = {
-    "/action/40084", "/action/40085", "/play", "/stop", "/record"
+    "/action/40085", "/action/40084", "/play", "/stop", "/record"
   };
   for (int i = 0; i < transportButtons.length; i++) {
     transportButtons[i] = new Button(980, 10+i*90, labels[i], addresses[i], oscManager);
@@ -93,10 +92,7 @@ transportButtons[2].pauseOscAddress = "/pause";
 //MASTER CHANNEL
 //Represents the master track in reaper and has volume, solo, pan and mute controls in the visual mixer.
   for (int i = 0; i < MasterChannels.length; i++) {
-    float stripWidth = 75;
-    float spacing = 1;
     float startX = 900 + i * (stripWidth + spacing);
-
 
     MasterChannels[i] = new MasterChannel(0,
       startX, 0, stripWidth, 320, oscManager
@@ -208,8 +204,8 @@ void draw() {
   for (Button button : transportButtons) {
     button.display();
   }
- transportButtons[0].repeatAction(); // REWIND
-transportButtons[1].repeatAction(); // FORWARD
+ transportButtons[0].repeatAction(); // FORWARD
+transportButtons[1].repeatAction(); // REWIND
   vuMeters.display();
   masterPanKnob.display();
 
@@ -298,6 +294,10 @@ void mouseReleased() {
   for (int j = 0; j < panKnobs.length; j++) {
     panKnobs[j].mouseReleased();
   }
+  for (MasterChannel masterchannel : MasterChannels) {
+  masterchannel.mouseReleased();
+}
+
   masterPanKnob.mouseReleased();
   
   for (Knob knob : eqBand1) knob.mouseReleased();
@@ -307,6 +307,8 @@ for (Knob knob : eqBand4) knob.mouseReleased();
 
 transportButtons[0].mouseReleased();
 transportButtons[1].mouseReleased();
+
+
 }
 
 
@@ -321,7 +323,8 @@ void oscEvent(OscMessage theOscMessage) {
 
 String address = theOscMessage.addrPattern();
 
-println("OSC IN: " + address);
+println("Received OSC: " + theOscMessage.addrPattern()
+        + " type: " + theOscMessage.typetag());
 
 //Updates per track values from REAPERs OSC Messages
 //Each address corresponds to a specific track property and is mapped to the appropriate UI element.
@@ -353,17 +356,20 @@ println("OSC IN: " + address);
       //the Master channel is treated separately from the normal channels as it represents the overall mix rather than a single input.
       if (address.equals("/master/volume") &&
     theOscMessage.checkTypetag("f")) {
+println("Master volume received: " +
+          theOscMessage.get(0).floatValue());
+
   MasterChannels[0].volume =
     constrain(theOscMessage.get(0).floatValue(), 0, 1);
-}
+} 
 
-if (address.equals("/track/mute/toggle") &&
+if (address.equals("/track/mute") &&
     theOscMessage.checkTypetag("f")) {
   MasterChannels[0].muteButton.active =
   theOscMessage.get(0).floatValue() != 0;
 }
 
-if (address.equals("/master/solo") &&
+if (address.equals("/track/solo") &&
     theOscMessage.checkTypetag("f")) {
   MasterChannels[0].soloButton.active =
   theOscMessage.get(0).floatValue() != 0;
@@ -375,7 +381,7 @@ if (address.equals("/master/pan") &&
     map(theOscMessage.get(0).floatValue(), 0, 1, -1, 1);
 }
     
-      
+
 //EQ stuff
 //EQ bypass state is sent as a normalized float from REAPER
 //that float is converted into the buttons active state so that the UI reflects whether EQ is enabled or
@@ -386,7 +392,11 @@ for (int i = 0; i < channels.length; i++) {
 }
 
     }
+    //OSC Message filter for EQ parser
+    if (address.contains("/fxeq/band/")) {
     updateEqKnobFromReaper(theOscMessage);
+  }
+
   }
   void updateEqKnobFromReaper(OscMessage msg) {
     println("Address received: " + msg.addrPattern());
@@ -396,10 +406,10 @@ int track;
   int band;
   String parameter;
 
-  if (parts.length != 7 ||
-      !parts[0].equals("track") ||
-      !parts[2].equals("fxeq") ||
-      !parts[3].equals("band")){
+  if (parts.length == 7 &&
+      parts[0].equals("track") &&
+      parts[2].equals("fxeq") &&
+      parts[3].equals("band")){
   track = int(parts[1]);
     band = int(parts[4]);
     parameter = parts[5] + "/" + parts[6];
